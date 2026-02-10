@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trackster | Smart Motion Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="overlay"></div>
+
+<div class="main-container">
+
+    <h1>Smart Motion Detection System</h1>
+    <p class="subtitle">Automatic detection, recording & alerts</p>
+
+    <div class="button-group">
+        <button class="btn start-btn" onclick="startDetection()">▶ Start Detection</button>
+        <button class="btn stop-btn" onclick="stopDetection()">■ Stop Detection</button>
+        <button class="btn refresh-btn" onclick="loadVideos()">🔄 Refresh Videos</button>
+    </div>
+
+    <p id="status">Detection stopped</p>
+
+    <div class="video-section">
+        <h3>Recorded Videos</h3>
+        <ul id="videoList"></ul>
+    </div>
+
+</div>
+
+<script>
+function startDetection() {
+    fetch('/start')
+        .then(res => res.text())
+        .then(msg => document.getElementById("status").innerText = msg);
+}
+
+function stopDetection() {
+    fetch('/stop')
+        .then(res => res.text())
+        .then(msg => document.getElementById("status").innerText = msg);
+}
+
+function loadVideos() {
+    fetch('/videos')
+        .then(res => res.json())
+        .then(files => {
+            const list = document.getElementById("videoList");
+            list.innerHTML = "";
+
+            if (files.length === 0) {
+                list.innerHTML = "<li>No videos found</li>";
+                return;
+            }
+
+            files.forEach(file => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <span>${file}</span>
+                    <a class="download-btn" href="/download/${file}">⬇ Download</a>
+                    <button class="delete-btn" onclick="deleteVideo('${file}')">🗑 Delete</button>
+                `;
+                list.appendChild(li);
+            });
+        });
+}
+
+function deleteVideo(filename) {
+    if (!confirm("Are you sure you want to delete this video?")) return;
+
+    fetch(`/delete/${filename}`, { method: "DELETE" })
+        .then(() => loadVideos());
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Recorded media
+recordings/
+recordings/videos/
+recordings/screenshots/
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
