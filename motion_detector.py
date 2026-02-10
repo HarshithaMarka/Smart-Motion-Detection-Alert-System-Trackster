@@ -79,7 +79,7 @@ def start_detection():
 
             if not is_recording:
                 filename = f"recordings/videos/motion_{int(now)}.mp4"
-                fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                fourcc = cv2.VideoWriter_fourcc(*'mp4')
                 video_writer = cv2.VideoWriter(
                     filename, fourcc, FPS, (WIDTH, HEIGHT)
                 )
