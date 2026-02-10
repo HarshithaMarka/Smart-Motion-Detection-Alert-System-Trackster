@@ -11,10 +11,10 @@ def start_detection():
 
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     if not cap.isOpened():
-        print("❌ Camera not accessible")
+        print("Camera not accessible")
         return
 
-    print("✅ Camera opened")
+    print("Camera opened")
 
     back_sub = cv2.createBackgroundSubtractorMOG2(
         history=700,
@@ -84,7 +84,7 @@ def start_detection():
                     filename, fourcc, FPS, (WIDTH, HEIGHT)
                 )
                 is_recording = True
-                print("🎥 Recording started")
+                print(" Recording started")
 
             if now - last_alert_time > ALERT_COOLDOWN:
                 last_alert_time = now
@@ -122,7 +122,7 @@ def start_detection():
     if video_writer:
         video_writer.release()
     cv2.destroyAllWindows()
-    print("🛑 Detection stopped")
+    print(" Detection stopped")
 
 
 def stop_detection():
