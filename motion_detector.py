@@ -78,8 +78,8 @@ def start_detection():
             last_motion_time = now
 
             if not is_recording:
-                filename = f"recordings/videos/motion_{int(now)}.webm"
-                fourcc = cv2.VideoWriter_fourcc(*'VP80')
+                filename = f"recordings/videos/motion_{int(now)}.mp4"
+                fourcc = cv2.VideoWriter_fourcc(*'mp4v')
                 video_writer = cv2.VideoWriter(
                     filename, fourcc, FPS, (WIDTH, HEIGHT)
                 )
