@@ -8,21 +8,26 @@ from utils.twilio_alert import send_alert_with_image
 stop_detection_flag = False
 status = "Stopped"
 
+
 def start_detection():
     global stop_detection_flag, status
     stop_detection_flag = False
     status = "Running"
 
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+
     if not cap.isOpened():
+        print("❌ Camera not accessible")
         status = "Camera Error"
         return
 
     print("✅ Camera opened")
+
     hog = cv2.HOGDescriptor()
     hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
     os.makedirs("recordings/videos", exist_ok=True)
+    os.makedirs("recordings/screenshots", exist_ok=True)
     os.makedirs("logs", exist_ok=True)
 
     log_file = "logs/motion_logs.txt"
@@ -42,6 +47,7 @@ def start_detection():
 
         frame = cv2.resize(frame, (640, 480))
 
+       
         boxes, weights = hog.detectMultiScale(frame, winStride=(8, 8))
 
         human_detected = False
@@ -64,6 +70,7 @@ def start_detection():
                 video_writer = cv2.VideoWriter(filename, fourcc, 20.0, (640, 480))
                 is_recording = True
 
+           
                 with open(log_file, "a") as f:
                     f.write(f"[{datetime.now()}] Human detected\n")
 
@@ -71,8 +78,13 @@ def start_detection():
                 last_alert_time = now
                 img_path = f"recordings/screenshots/human_{int(now)}.jpg"
                 cv2.imwrite(img_path, frame)
-                image_url = upload_image(img_path)
-                send_alert_with_image(image_url)
+
+                try:
+                    image_url = upload_image(img_path)
+                    send_alert_with_image(image_url)
+                    print("🚨 Alert sent")
+                except Exception as e:
+                    print("Alert failed:", e)
 
         if is_recording and (now - last_motion_time) > RECORD_STOP_DELAY:
             video_writer.release()
@@ -92,7 +104,9 @@ def start_detection():
     if video_writer:
         video_writer.release()
     cv2.destroyAllWindows()
+
     status = "Stopped"
+    print("🛑 Detection stopped")
 
 
 def stop_detection():
