@@ -61,6 +61,14 @@ def delete_video(filename):
         os.remove(path)
         return jsonify({"message": "Video deleted"})
     return jsonify({"message": "File not found"}), 404
+@app.route('/status')
+def get_status():
+    if motion_detector.stop_detection_flag:
+        return "Stopped"
+    else:
+        return "Running"
+
 
 if __name__ == "__main__":
     app.run(debug=True)
+    

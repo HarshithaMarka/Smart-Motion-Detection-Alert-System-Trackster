@@ -21,3 +21,7 @@ recordings/screenshots/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Logs
+logs/
+*.log

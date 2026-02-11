@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Trackster | Smart Motion Detection</title>
+    <title>Trackster | Smart Human Detection</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -12,67 +12,56 @@
 
 <div class="main-container">
 
-    <h1>Smart Motion Detection System</h1>
-    <p class="subtitle">Automatic detection, recording & alerts</p>
+    <h1>Smart Human Intrusion Detection System</h1>
+    <p class="subtitle">AI-Based Real-Time Monitoring & Alerts</p>
 
+    <!-- BUTTONS -->
     <div class="button-group">
         <button class="btn start-btn" onclick="startDetection()">▶ Start Detection</button>
         <button class="btn stop-btn" onclick="stopDetection()">■ Stop Detection</button>
-        <button class="btn refresh-btn" onclick="loadVideos()">🔄 Refresh Videos</button>
+        <button class="btn logs-btn" onclick="window.open('/logs')">📄 View Logs</button>
     </div>
 
-    <p id="status">Detection stopped</p>
-
-    <div class="video-section">
-        <h3>Recorded Videos</h3>
-        <ul id="videoList"></ul>
+    <!-- LIVE STATUS DISPLAY -->
+    <div class="status-box">
+        <h3>Status: 
+            <span id="statusText" style="color: #00ffcc;">Stopped</span>
+        </h3>
     </div>
 
 </div>
 
+<!-- JAVASCRIPT SECTION -->
 <script>
+
 function startDetection() {
     fetch('/start')
         .then(res => res.text())
-        .then(msg => document.getElementById("status").innerText = msg);
+        .then(msg => {
+            document.getElementById("statusText").innerText = msg;
+        });
 }
 
 function stopDetection() {
     fetch('/stop')
         .then(res => res.text())
-        .then(msg => document.getElementById("status").innerText = msg);
-}
-
-function loadVideos() {
-    fetch('/videos')
-        .then(res => res.json())
-        .then(files => {
-            const list = document.getElementById("videoList");
-            list.innerHTML = "";
-
-            if (files.length === 0) {
-                list.innerHTML = "<li>No videos found</li>";
-                return;
-            }
-
-            files.forEach(file => {
-                const li = document.createElement("li");
-                li.innerHTML = `
-                    <span>${file}</span>
-                    <a class="download-btn" href="/download/${file}">⬇ Download</a>
-                    <button class="delete-btn" onclick="deleteVideo('${file}')">🗑 Delete</button>
-                `;
-                list.appendChild(li);
-            });
+        .then(msg => {
+            document.getElementById("statusText").innerText = msg;
         });
 }
 
-function deleteVideo(filename) {
-    if (!confirm("Are you sure you want to delete this video?")) return;
-
-    fetch(`/delete/${filename}`, { method: "DELETE" })
-        .then(() => loadVideos());
+// LIVE STATUS UPDATE EVERY 2 SECONDS
+function updateStatus() {
+    fetch('/status')
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById("statusText").innerText = data;
+        });
 }
+
+// Auto refresh status
+setInterval(updateStatus, 2000);
+
 </script>
 
 </body>
